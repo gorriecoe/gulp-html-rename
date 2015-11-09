@@ -40,21 +40,21 @@ var ABC = ['', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
  */
 var getMapping = function(current, alphabet, separator) {
   current[4]++;
-  if (current[0] >= alphabet.length) {
-    current[1]++;
-    current[0] = 0;
-  }
-  if (current[1] >= alphabet.length) {
-    current[2]++;
-    current[1] = 0;
-  }
-  if (current[2] >= alphabet.length) {
+  if (current[4] >= alphabet.length) {
     current[3]++;
-    current[2] = 0;
+    current[4] = 0;
   }
   if (current[3] >= alphabet.length) {
-    current[4]++;
+    current[2]++;
     current[3] = 0;
+  }
+  if (current[2] >= alphabet.length) {
+    current[1]++;
+    current[2] = 0;
+  }
+  if (current[1] >= alphabet.length) {
+    current[0]++;
+    current[1] = 0;
   }
 
   return alphabet[current[0]] + separator + alphabet[current[1]] +
@@ -91,7 +91,8 @@ var getClassMapping = function() {
 function replace(f, i, pattern, mapper) {
   if (f.substr(i, pattern.length) === pattern) {
     var j = 1;
-    while (f[i + j] != '\"' && f[i + j] != '\'' && f[i + j] != '>' && f[i + j] != ' ') {
+    while (f[i + j] != '\"' && f[i + j] != '\'' && f[i + j] != '>' &&
+    f[i + j] != ' ' && f[i + j] != ')' && f[i + j] != '{') {
       j++;
     }
 
@@ -158,7 +159,7 @@ module.exports = function(options) {
     customPrefix = options;
     var func;
     for (var i = 0; i < options; i++) {
-      switch(options[i].type){
+      switch (options[i].type) {
         case 'id':
           func = getIdMapping;
           break;
