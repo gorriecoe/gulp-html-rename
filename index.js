@@ -61,22 +61,16 @@ var getMapping = function(current, alphabet, separator) {
       alphabet[current[2]] + alphabet[current[3]] + alphabet[current[4]];
 };
 
-var currentId = [1, 0, 0, 0, 0];
-
 var getIdMapping = function() {
-  return getMapping(currentId, ABC, '');
+  return getMapping(htmlRename.cache['id'], ABC, '');
 };
-
-var currentLongId = [1, 0, 0, 0, 0];
 
 var getLongIdMapping = function() {
-  return getMapping(currentLongId, ABC, '-');
+  return getMapping(htmlRename.cache['long-id'], ABC, '-');
 };
 
-var currentClass = [1, 0, 0, 0, 0];
-
 var getClassMapping = function() {
-  return getMapping(currentClass, ABC, '');
+  return getMapping(htmlRename.cache['class'], ABC, '');
 };
 
 /**
@@ -92,11 +86,16 @@ function replace(f, i, pattern, mapper) {
   if (f.substr(i, pattern.length) === pattern) {
     var j = 1;
     while (f[i + j] != '\"' && f[i + j] != '\'' && f[i + j] != '>' &&
-    f[i + j] != ' ' && f[i + j] != ')' && f[i + j] != '{') {
+    f[i + j] != ' ' && f[i + j] != ')' && f[i + j] != '{' && f[i + j] != ':') {
       j++;
     }
 
-    f = f.replace(new RegExp(f.substr(i, j), 'g'), mapper())
+    var map = mapper();
+    var regex = '/' + f.substr(i, j) + '[^-]/';
+
+    htmlRename.map.push({'name': regex, 'map': map});
+
+    f = f.replace(new RegExp(regex, 'g'), map)
   }
 
   return f;
@@ -108,15 +107,25 @@ function replace(f, i, pattern, mapper) {
  * @returns {*}
  */
 var rename = function(file) {
+  if (!('.html' in file.history && '.js' in file.history &&
+      '.css' in file.history)) {
+    return file;
+  }
+
   var i = 0;
 
   if (file.isStream()) {
     this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported!'));
-
   }
 
   if (file.isBuffer()) {
     var f = file.contents.toString('utf-8');
+
+    var k = 0;
+    while (k < htmlRename.map.length) {
+      f = f.replace(new RegExp(htmlRename.map[k].name, 'g'), htmlRename.map[k].map)
+      k++;
+    }
 
     while (i < f.length) {
       // Basic ids and classes.
@@ -131,7 +140,7 @@ var rename = function(file) {
 
       var j = 0;
       while (j < customPrefix.length) {
-        f = replace(f, i, customPrefix[j].name, customPrefix[j].func);
+        f = replace(f, i, customPrefix[j], getLongIdMapping);
         j++;
       }
 
@@ -147,40 +156,25 @@ var rename = function(file) {
 var customPrefix = [];
 
 /**
- * @param options Array of objects with prefix and optional a type.
- * Prefix is the prefix of the words that should be shortened. Type is the type
- * of the word, either class, id or long-id.
- * class is used for css classes.
- * id is used for ids.
- * long-id is used for ids with a '-' inside it.
+ * @param options Array of prefixes.
+ * Prefix is the prefix of the words that should be shortened.
  */
-module.exports = function(options) {
+htmlRename = function(options) {
   if (options != null) {
     customPrefix = options;
-    var func;
-    for (var i = 0; i < options; i++) {
-      switch (options[i].type) {
-        case 'id':
-          func = getIdMapping;
-          break;
-        case 'long-id':
-          func = getLongIdMapping;
-          break;
-        case 'class':
-          func = getClassMapping;
-          break;
-        default:
-          func = getIdMapping;
-      }
-
-      customPrefix.push({
-        prefix: options[i].prefix,
-        func: func
-      });
-    }
   }
 
   return through.obj(function(file, encoding, callback) {
     callback(null, rename(file));
   });
 };
+
+htmlRename.cache = {
+  'id': [1, 0, 0, 0, 0],
+  'long-id': [1, 0, 0, 0, 0],
+  'class': [1, 0, 0, 0, 0]
+};
+
+htmlRename.map = [];
+
+module.exports = htmlRename;
