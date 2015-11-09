@@ -30,7 +30,7 @@ gulp.task('rename', function(){
 ```javascript
 var htmlReplace = require('gulp-html-replace');
 var options = [
-  {prefix: 'my-id', type: 'id'}
+  'my-id-'
 ];
 
 gulp.task('rename', function(){
@@ -50,10 +50,6 @@ gulp-html-replace can be called with options.
 #### options
 Type: `Array`
 
-The array with objects.
-Each object must have a prefix attribute and optionally a type (one of id, long id and class). 
-* `id` is used for ids (default)
-* `class` is used for classes
-* `long-id` is used for ids that must contain a dash.
+The array with prefix strings.
 
 [npm-url]: https://npmjs.org/package/gulp-html-rename
