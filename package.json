@@ -1,6 +1,6 @@
 {
   "name": "gulp-html-rename",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shorten all ids and classes inside html, css and JavaScript.",
   "keywords": "gulpplugin",
   "main": "index.js",

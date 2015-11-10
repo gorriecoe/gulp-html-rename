@@ -91,11 +91,11 @@ function replace(f, i, pattern, mapper) {
     }
 
     var map = mapper();
-    var regex = '/' + f.substr(i, j) + '[^-]/';
+    var regex = f.substr(i, j);
 
     htmlRename.map.push({'name': regex, 'map': map});
 
-    f = f.replace(new RegExp(regex, 'g'), map)
+    f = f.replace(new RegExp(regex + '(?!-)', 'g'), map)
   }
 
   return f;
@@ -107,8 +107,9 @@ function replace(f, i, pattern, mapper) {
  * @returns {*}
  */
 var rename = function(file) {
-  if (!('.html' in file.history && '.js' in file.history &&
-      '.css' in file.history)) {
+  if (String(file.history).indexOf(".html") == -1 &&
+      String(file.history).indexOf(".js") == -1 &&
+      String(file.history).indexOf(".css") == -1){
     return file;
   }
 
@@ -123,7 +124,8 @@ var rename = function(file) {
 
     var k = 0;
     while (k < htmlRename.map.length) {
-      f = f.replace(new RegExp(htmlRename.map[k].name, 'g'), htmlRename.map[k].map)
+      f = f.replace(new RegExp(htmlRename.map[k].name + '(?!-)', 'g'),
+          htmlRename.map[k].map);
       k++;
     }
 
