@@ -1,10 +1,10 @@
 # gulp-html-rename [![NPM](https://nodei.co/npm/gulp-html-rename.png)](https://nodei.co/npm/gulp-html-rename/)
-> An HTML, CSS and JavaScript id and class minifier.
+> An HTML, CSS and JavaScript id and class minimiser.
 
 This plugin only renames ids with a prefix of `id-` and classes with a prefix of `class-`.
 You can specify more prefixes though the options object.
 
-[Polymer](https://github.com/polymer/polymer) element named are included by default (`iron-`, `paper-`, ...)
+[Polymer](https://github.com/polymer/polymer) element names are included by default (`iron-`, `paper-`, ...)
 
 ## Usage
 
@@ -16,26 +16,26 @@ npm install --save-dev gulp-html-rename
 
 Then, add it to your `gulpfile.js`:
 
-### Default Replace
+### Default Rename
 ```javascript
-var htmlReplace = require('gulp-html-replace');
+var htmlRename = require('gulp-html-rename');
 
 gulp.task('rename', function(){
   gulp.src(['build/**/*'])
-    .pipe(htmlReplace())
+    .pipe(htmlRename())
     .pipe(gulp.dest('build/'));
 });
 ```
 ### Custom Replace
 ```javascript
-var htmlReplace = require('gulp-html-replace');
+var htmlRename = require('gulp-html-rename');
 var options = [
   'my-id-'
 ];
 
 gulp.task('rename', function(){
   gulp.src(['build/**/*'])
-    .pipe(htmlReplace(options))
+    .pipe(htmlRename(options))
     .pipe(gulp.dest('build/'));
 });
 ```
@@ -43,9 +43,9 @@ gulp.task('rename', function(){
 
 ## API
 
-gulp-html-replace can be called with options.
+gulp-html-rename can be called with options.
 
-### htmlReplace([options])
+### htmlRename([options])
 
 #### options
 Type: `Array`
