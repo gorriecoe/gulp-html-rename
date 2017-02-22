@@ -106,10 +106,10 @@ function replace(f, i, pattern, mapper) {
  * @param file The files to rename.
  * @returns {*}
  */
-var rename = function(file) {
-  if (String(file.history).indexOf(".html") == -1 &&
-      String(file.history).indexOf(".js") == -1 &&
-      String(file.history).indexOf(".css") == -1){
+var rename = function(file, allowedExtensions) {
+  var allowedExtensions = allowedExtensions.join('|');
+  var extensionRegex = new RegExp('.(html|css|js|' + allowedExtensions + ')', 'i');
+  if (!String(file.history).match(extensionRegex)){
     return file;
   }
 
@@ -161,13 +161,13 @@ var customPrefix = [];
  * @param options Array of prefixes.
  * Prefix is the prefix of the words that should be shortened.
  */
-htmlRename = function(options) {
+htmlRename = function(options, allowedExtensions) {
   if (options != null) {
     customPrefix = options;
   }
 
   return through.obj(function(file, encoding, callback) {
-    callback(null, rename(file));
+    callback(null, rename(file, allowedExtensions));
   });
 };
 
